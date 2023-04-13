@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>T15.Traffic Control System</title>
+  <style>
+    /* Set the size and background color of the traffic light */
+    .traffic-light {
+      position: absolute;
+      left: 1400px;
+      top: 100px;
+      width: 50px;
+      height: 190px;
+      background-color: #444;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    /* Set the size and border radius of the light circles */
+    .traffic-light div {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin: 10px auto;
+      box-shadow: inset 0px 0px 20px rgba(255,255,255,0.5), 0px 0px 20px rgba(0,0,0,0.5);
+    }
+
+    .active {
+      filter: brightness(2);
+    }
+
+    /* Set the default colors for the lights */
+    .traffic-light .red {
+      background-color: #900;
+    }
+
+    .traffic-light .yellow {
+      background-color: #990;
+    }
+
+    .traffic-light .green {
+      background-color: #090;
+    }
+  </style>
+</head>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
+
+<body>
+<h1>Traffic Control</h1>
+
+<video id="videoElement" height="720px" width="1280px" autoplay></video>
+<hr>
+
+<button onclick="goLoad()">Show Result</button>
+<button onclick="goPlay()">Live Inference</button>
+
+<hr>
+<div class="traffic-light">
+  <!-- Create the three light circles -->
+  <div class="red"></div>
+  <div class="yellow"></div>
+  <div class="green"></div>
+</div>
+</body>
+
+<script>
+  let redLight = document.querySelector(".traffic-light .red");
+  let yellowLight = document.querySelector(".traffic-light .yellow");
+  let greenLight = document.querySelector(".traffic-light .green");
+
+  function resetLights(){
+    redLight.classList.remove("active");
+    yellowLight.classList.remove("active");
+    greenLight.classList.remove("active");
+  }
+
+  function light(which){
+    if (which === "red"){
+      resetLights();
+      redLight.classList.add("active");
+    } else {
+      resetLights();
+      greenLight.classList.add("active");
+    }
+  }
+
+  function show(){
+    setTimeout(()=>light("red"),0);
+    setTimeout(()=>light("green"),2000);
+    setTimeout(()=>light("red"),10000);
+    setTimeout(()=>light("green"),14000);
+    setTimeout(()=>light("red"),23000);
+    setTimeout(()=>light("green"),27000);
+    setTimeout(()=>resetLights(),35000);
+  }
+
+</script>
+
+<script>
+  let flvPlayer;
+  function goLoad() {
+    let video = document.querySelector("video");
+    video.setAttribute("src", "/video/traffic");
+    show();
+  }
+
+  function goPlay() {
+    let video = document.querySelector("video");
+    video.removeAttribute("src");
+    console.log("load click!");
+    console.log("mse live support:" + flvjs.getFeatureList().mseLiveFlvPlayback);
+    if (flvjs.isSupported()) {
+      var videoElement = document.getElementById('videoElement');
+      console.log("videoElement:" + videoElement);
+      flvPlayer = flvjs.createPlayer({
+        type: 'flv',
+        isLive: true,
+        url: "http://137.184.131.134:8080/live/first",
+        duration: 0,
+        filesize: 0,
+        enableStashBuffer: false,
+        hasAudio: false,
+        hasVideo: true
+      });
+      flvPlayer.attachMediaElement(videoElement);
+      flvPlayer.load();
+    }
+    setTimeout(() => {}, 500);
+    console.log("play button press")
+    flvPlayer.play();
+  }
+
+</script>
+
+</html>
